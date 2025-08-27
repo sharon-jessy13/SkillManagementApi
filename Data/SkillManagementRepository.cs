@@ -9,6 +9,7 @@ namespace SkillManagement.Api.Data
     public interface ISkillManagementRepository
     {
         Task<IReadOnlyList<EmployeeWfTriggerDto>> GetEmployeesForWfTriggerAsync(CancellationToken ct);
+        Task<IEnumerable<Role>> GetRolesAsync();
         Task<IEnumerable<Skill>> GetPrimarySkillsAsync(int empId);
         Task<IEnumerable<Assignment>> GetAssignmentsAsync(int empId);
         Task<IEnumerable<ProgrammingLanguage>> GetProgrammingLanguagesAsync(int empId);
@@ -44,6 +45,14 @@ namespace SkillManagement.Api.Data
             return rows.AsList();
         }
 
+        public async Task<IEnumerable<Role>> GetRolesAsync()
+        {
+            using var conn = new SqlConnection(_connectionString);
+            return await conn.QueryAsync<Role>(
+                "SkillManagement_GetRoles",
+                commandType: CommandType.StoredProcedure);
+        }
+
         public async Task<IEnumerable<Skill>> GetPrimarySkillsAsync(int empId)
         {
             using var conn = new SqlConnection(_connectionString);
@@ -71,6 +80,11 @@ namespace SkillManagement.Api.Data
                 commandType: CommandType.StoredProcedure);
         }
 
+        /* * NOTE: Your GetDomainListAsync is more flexible than the separate GetLevel1/2/3 methods.
+         * To get Level 1 domains, you would call this with l1DomainId=0, l2DomainId=0, l3DomainId=0.
+         * To get Level 2 domains under Level 1 (ID=5), you'd call it with l1DomainId=5, l2DomainId=0, etc.
+         * This single method is better than adding three separate ones.
+        */
         public async Task<IEnumerable<Domain>> GetDomainListAsync(int l1DomainId, int l2DomainId, int l3DomainId)
         {
             using var conn = new SqlConnection(_connectionString);

@@ -12,6 +12,12 @@ namespace SkillManagement.Api.Models
         public string? ManagerEmail { get; set; }
     }
 
+    public class Role
+    {
+        public int RoleId { get; set; }
+        public string RoleName { get; set; }
+    }
+
     /// <summary>
     /// Represents a primary or secondary skill.
     /// </summary>

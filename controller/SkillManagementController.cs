@@ -16,6 +16,14 @@ namespace SkillManagement.Api.Controllers
             _repo = repo;
         }
 
+        // GET: api/skill-management/roles
+        [HttpGet("roles")]
+        public async Task<IActionResult> GetRoles()
+        {
+            var roles = await _repo.GetRolesAsync();
+            return Ok(roles);
+        }
+
         // GET: api/skill-management/employees
         [HttpGet("employees")]
         public async Task<IActionResult> GetEmployees(CancellationToken ct)
