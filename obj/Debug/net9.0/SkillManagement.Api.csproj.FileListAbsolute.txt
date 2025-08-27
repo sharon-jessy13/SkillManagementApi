@@ -87,3 +87,4 @@ C:\samsung\SkillManagement\SkillManagement.Api\obj\Debug\net9.0\refint\SkillMana
 C:\samsung\SkillManagement\SkillManagement.Api\obj\Debug\net9.0\SkillManagement.Api.pdb
 C:\samsung\SkillManagement\SkillManagement.Api\obj\Debug\net9.0\SkillManagement.Api.genruntimeconfig.cache
 C:\samsung\SkillManagement\SkillManagement.Api\obj\Debug\net9.0\ref\SkillManagement.Api.dll
+C:\samsung\SkillManagement\SkillManagement.Api\obj\Debug\net9.0\SkillManagement.Api.sourcelink.json

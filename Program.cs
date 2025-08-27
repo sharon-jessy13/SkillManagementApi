@@ -1,9 +1,16 @@
 using SkillManagement.Api.Data;
+using FluentValidation.AspNetCore;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers(); 
+builder.Services.AddControllers();
+
+// Add FluentValidation and register all validators in the assembly
+builder.Services.AddFluentValidation(fv => 
+    fv.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()));
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ISkillManagementRepository, SkillManagementRepository>();

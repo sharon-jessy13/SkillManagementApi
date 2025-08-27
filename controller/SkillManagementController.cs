@@ -60,32 +60,28 @@ namespace SkillManagement.Api.Controllers
         [HttpGet("proficiencies")]
         public async Task<IActionResult> GetProficiencies()
         {
-            var data = await _repo.GetProficiencyAsync();
-            return Ok(data);
+            return Ok(await _repo.GetProficiencyAsync());
         }
 
         // GET: api/skill-management/experience-years
         [HttpGet("experience-years")]
         public async Task<IActionResult> GetExperienceYears()
         {
-            var data = await _repo.GetYearsOfExperienceAsync();
-            return Ok(data);
+            return Ok(await _repo.GetYearsOfExperienceAsync());
         }
 
         // GET: api/skill-management/activity-types
         [HttpGet("activity-types")]
         public async Task<IActionResult> GetActivityTypes()
         {
-            var data = await _repo.GetActivityTypesAsync();
-            return Ok(data);
+            return Ok(await _repo.GetActivityTypesAsync());
         }
 
         // GET: api/skill-management/complexity
         [HttpGet("complexity")]
         public async Task<IActionResult> GetComplexity()
         {
-            var data = await _repo.GetComplexityAsync();
-            return Ok(data);
+            return Ok(await _repo.GetComplexityAsync());
         }
 
         // POST: api/skill-management/add-skill
@@ -93,7 +89,7 @@ namespace SkillManagement.Api.Controllers
         public async Task<IActionResult> AddSkill([FromBody] AddSkillRequest request)
         {
             var result = await _repo.InsertSkillAsync(request);
-            return result > 0 ? Ok("Skill inserted successfully") : BadRequest("Insert failed");
+            return result > 0 ? Created() : BadRequest("Insert failed");
         }
 
         // POST: api/skill-management/add-programming-skill
@@ -101,7 +97,7 @@ namespace SkillManagement.Api.Controllers
         public async Task<IActionResult> AddProgrammingSkill([FromBody] AddProgrammingSkillRequest request)
         {
             var result = await _repo.InsertProgrammingSkillAsync(request);
-            return result > 0 ? Ok("Programming skill inserted successfully") : BadRequest("Insert failed");
+            return result > 0 ? Created() : BadRequest("Insert failed");
         }
 
         // POST: api/skill-management/save-skill-draft
@@ -125,20 +121,15 @@ namespace SkillManagement.Api.Controllers
         public async Task<IActionResult> DeleteProgrammingSkill(int smid, int epsdid)
         {
             var result = await _repo.DeleteProgrammingSkillAsync(smid, epsdid);
-            return result > 0 ? Ok("Programming skill deleted successfully") : BadRequest("Delete failed");
+            return result > 0 ? NoContent() : NotFound("Delete failed. Record not found.");
         }
 
         // DELETE: api/skill-management/skill
         [HttpDelete("skill")]
-        public async Task<IActionResult> DeleteSkill(
-            int smid, int domainId, string skillType,
-            string activityName, string proficiency, string experienceYears,
-            string complexity, int esdid)
+        public async Task<IActionResult> DeleteSkill([FromBody] DeleteSkillRequest request)
         {
-            var result = await _repo.DeleteSkillAsync(smid, domainId, skillType,
-                activityName, proficiency, experienceYears, complexity, esdid);
-
-            return result > 0 ? Ok("Skill deleted successfully") : BadRequest("Delete failed");
+            var result = await _repo.DeleteSkillAsync(request);
+            return result > 0 ? NoContent() : NotFound("Delete failed. Record not found.");
         }
     }
 }

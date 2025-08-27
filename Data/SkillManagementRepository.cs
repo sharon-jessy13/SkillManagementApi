@@ -4,7 +4,6 @@ using Dapper;
 using SkillManagement.Api.Models;
 using SkillManagement.Api.Models.Requests;
 
-
 namespace SkillManagement.Api.Data
 {
     public interface ISkillManagementRepository
@@ -23,11 +22,7 @@ namespace SkillManagement.Api.Data
         Task<int> SaveSkillDraftAsync(SaveSkillDraftRequest request);
         Task<int> SaveProgrammingSkillDraftAsync(SaveProgrammingSkillDraftRequest request);
         Task<int> DeleteProgrammingSkillAsync(int smid, int epsdid);
-        Task<int> DeleteSkillAsync(int smid, int domainId, string skillType,
-            string activityName, string proficiency, string experienceYears,
-            string complexity, int esdid);
-
-
+        Task<int> DeleteSkillAsync(DeleteSkillRequest request);
     }
 
     public sealed class SkillManagementRepository : ISkillManagementRepository
@@ -36,7 +31,8 @@ namespace SkillManagement.Api.Data
 
         public SkillManagementRepository(IConfiguration cfg)
         {
-            _connectionString = cfg.GetConnectionString("AppDb")!;
+            _connectionString = cfg.GetConnectionString("AppDb")!
+                ?? throw new ArgumentNullException(nameof(cfg), "Connection string 'AppDb' not found.");
         }
 
         public async Task<IReadOnlyList<EmployeeWfTriggerDto>> GetEmployeesForWfTriggerAsync(CancellationToken ct)
@@ -123,14 +119,14 @@ namespace SkillManagement.Api.Data
                 "SkillManagement_InsertEmpSkillDetails",
                 new
                 {
-                    SMID = request.SMID,
-                    DomainID = request.DomainID,
+                    request.SMID,
+                    request.DomainID,
                     ActivityID = request.SkillType == "C" ? request.ActivityID : 0,
-                    PID = request.PID,
+                    request.PID,
                     CID = 0,
-                    YEID = request.YEID,
+                    request.YEID,
                     OtherDomainSkill = request.OtherDomainSkill ?? string.Empty,
-                    SkillType = request.SkillType
+                    request.SkillType
                 },
                 commandType: CommandType.StoredProcedure
             );
@@ -143,9 +139,9 @@ namespace SkillManagement.Api.Data
                 "SkillManagement_InsertEmpProgSkillDetails",
                 new
                 {
-                    SMID = request.SMID,
-                    PLID = request.PLID,
-                    YEID = request.YEID,
+                    request.SMID,
+                    request.PLID,
+                    request.YEID,
                     OtherPL = request.OtherPL ?? string.Empty
                 },
                 commandType: CommandType.StoredProcedure
@@ -156,17 +152,7 @@ namespace SkillManagement.Api.Data
             using var conn = new SqlConnection(_connectionString);
             return await conn.ExecuteAsync(
                 "SkillManagement_UpdateSkillDetailsOnSubmit",
-                new
-                {
-                    SMID = request.SMID,
-                    SkillType = request.SkillType,
-                    DomainID = request.DomainID,
-                    Proficiency = request.Proficiency ?? (object)DBNull.Value,
-                    ExperienceYears = request.ExperienceYears ?? (object)DBNull.Value,
-                    ActivityName = request.ActivityName ?? (object)DBNull.Value,
-                    Complexity = request.Complexity ?? (object)DBNull.Value,
-                    ESDID = request.ESDID
-                },
+                request,
                 commandType: CommandType.StoredProcedure
             );
         }
@@ -176,13 +162,7 @@ namespace SkillManagement.Api.Data
             using var conn = new SqlConnection(_connectionString);
             return await conn.ExecuteAsync(
                 "SkillManagement_UpdateEmpProgSkillDetailsOnSubmit",
-                new
-                {
-                    SMID = request.SMID,
-                    ProgLanguage = request.ProgLanguage,
-                    ExperienceYears = request.ExperienceYears,
-                    EPSDID = request.EPSDID
-                },
+                request,
                 commandType: CommandType.StoredProcedure
             );
         }
@@ -196,28 +176,14 @@ namespace SkillManagement.Api.Data
             );
         }
 
-        public async Task<int> DeleteSkillAsync(int smid, int domainId, string skillType,
-            string activityName, string proficiency, string experienceYears,
-            string complexity, int esdid)
+        public async Task<int> DeleteSkillAsync(DeleteSkillRequest request)
         {
             using var conn = new SqlConnection(_connectionString);
             return await conn.ExecuteAsync(
                 "SkillManagement_DeleteEmpSkillDetails",
-                new
-                {
-                    SMID = smid,
-                    DomainID = domainId,
-                    SkillType = skillType,
-                    ActivityName = activityName,
-                    Proficiency = proficiency,
-                    ExperienceYears = experienceYears,
-                    Complexity = complexity,
-                    ESDID = esdid
-                },
+                request,
                 commandType: CommandType.StoredProcedure
             );
         }
-
-
     }
 }
