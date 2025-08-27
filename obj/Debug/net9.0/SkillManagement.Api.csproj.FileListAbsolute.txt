@@ -88,3 +88,6 @@ C:\samsung\SkillManagement\SkillManagement.Api\obj\Debug\net9.0\SkillManagement.
 C:\samsung\SkillManagement\SkillManagement.Api\obj\Debug\net9.0\SkillManagement.Api.genruntimeconfig.cache
 C:\samsung\SkillManagement\SkillManagement.Api\obj\Debug\net9.0\ref\SkillManagement.Api.dll
 C:\samsung\SkillManagement\SkillManagement.Api\obj\Debug\net9.0\SkillManagement.Api.sourcelink.json
+C:\samsung\SkillManagement\SkillManagement.Api\bin\Debug\net9.0\FluentValidation.dll
+C:\samsung\SkillManagement\SkillManagement.Api\bin\Debug\net9.0\FluentValidation.AspNetCore.dll
+C:\samsung\SkillManagement\SkillManagement.Api\bin\Debug\net9.0\FluentValidation.DependencyInjectionExtensions.dll
