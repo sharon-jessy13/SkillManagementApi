@@ -1,5 +1,3 @@
-// You can keep these in separate files as you had before.
-// I've combined them here for brevity.
 namespace SkillManagement.Api.Models.Requests
 {
     public class AddProgrammingSkillRequest
