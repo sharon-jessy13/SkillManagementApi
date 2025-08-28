@@ -10,9 +10,9 @@ namespace SkillManagement.Api.Data
     {
         Task<IReadOnlyList<EmployeeWfTriggerDto>> GetEmployeesForWfTriggerAsync(CancellationToken ct);
         Task<IEnumerable<Role>> GetRolesAsync();
-        Task<IEnumerable<Skill>> GetPrimarySkillsAsync(int empId);
-        Task<IEnumerable<Assignment>> GetAssignmentsAsync(int empId);
-        Task<IEnumerable<ProgrammingLanguage>> GetProgrammingLanguagesAsync(int empId);
+        // Task<IEnumerable<Skill>> GetPrimarySkillsAsync(int empId);
+        // Task<IEnumerable<Assignment>> GetAssignmentsAsync(int empId);
+        // Task<IEnumerable<ProgrammingLanguage>> GetProgrammingLanguagesAsync(int empId);
         Task<IEnumerable<Domain>> GetDomainListAsync(int l1DomainId, int l2DomainId, int l3DomainId);
         Task<IEnumerable<Proficiency>> GetProficiencyAsync();
         Task<IEnumerable<Experience>> GetYearsOfExperienceAsync();
@@ -93,32 +93,32 @@ namespace SkillManagement.Api.Data
                 commandType: CommandType.StoredProcedure);
         }
 
-        public async Task<IEnumerable<Skill>> GetPrimarySkillsAsync(int empId)
-        {
-            using var conn = new SqlConnection(_connectionString);
-            return await conn.QueryAsync<Skill>(
-                "SkillManagement_GetPrimarySkills",
-                new { EmpId = empId },
-                commandType: CommandType.StoredProcedure);
-        }
+        // public async Task<IEnumerable<Skill>> GetPrimarySkillsAsync(int empId)
+        // {
+        //     using var conn = new SqlConnection(_connectionString);
+        //     return await conn.QueryAsync<Skill>(
+        //         "SkillManagement_GetPrimarySkills",
+        //         new { EmpId = empId },
+        //         commandType: CommandType.StoredProcedure);
+        // }
 
-        public async Task<IEnumerable<Assignment>> GetAssignmentsAsync(int empId)
-        {
-            using var conn = new SqlConnection(_connectionString);
-            return await conn.QueryAsync<Assignment>(
-                "SkillManagement_GetAssignments",
-                new { EmpId = empId },
-                commandType: CommandType.StoredProcedure);
-        }
+        // public async Task<IEnumerable<Assignment>> GetAssignmentsAsync(int empId)
+        // {
+        //     using var conn = new SqlConnection(_connectionString);
+        //     return await conn.QueryAsync<Assignment>(
+        //         "SkillManagement_GetAssignments",
+        //         new { EmpId = empId },
+        //         commandType: CommandType.StoredProcedure);
+        // }
 
-        public async Task<IEnumerable<ProgrammingLanguage>> GetProgrammingLanguagesAsync(int empId)
-        {
-            using var conn = new SqlConnection(_connectionString);
-            return await conn.QueryAsync<ProgrammingLanguage>(
-                "SkillManagement_GetProgrammingLanguages",
-                new { EmpId = empId },
-                commandType: CommandType.StoredProcedure);
-        }
+        // public async Task<IEnumerable<ProgrammingLanguage>> GetProgrammingLanguagesAsync(int empId)
+        // {
+        //     using var conn = new SqlConnection(_connectionString);
+        //     return await conn.QueryAsync<ProgrammingLanguage>(
+        //         "SkillManagement_GetProgrammingLanguages",
+        //         new { EmpId = empId },
+        //         commandType: CommandType.StoredProcedure);
+        // }
 
         /* * NOTE: Your GetDomainListAsync is more flexible than the separate GetLevel1/2/3 methods.
          * To get Level 1 domains, you would call this with l1DomainId=0, l2DomainId=0, l3DomainId=0.

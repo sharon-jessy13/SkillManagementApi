@@ -65,28 +65,28 @@ namespace SkillManagement.Api.Controllers
         }
 
         // GET: api/skill-management/skills/{empId}
-        [HttpGet("skills/{empId}")]
-        public async Task<IActionResult> GetSkills(int empId)
-        {
-            var skills = await _repo.GetPrimarySkillsAsync(empId);
-            return Ok(skills);
-        }
+        // [HttpGet("skills/{empId}")]
+        // public async Task<IActionResult> GetSkills(int empId)
+        // {
+        //     var skills = await _repo.GetPrimarySkillsAsync(empId);
+        //     return Ok(skills);
+        // }
 
-        // GET: api/skill-management/assignments/{empId}
-        [HttpGet("assignments/{empId}")]
-        public async Task<IActionResult> GetAssignments(int empId)
-        {
-            var assignments = await _repo.GetAssignmentsAsync(empId);
-            return Ok(assignments);
-        }
+        // // GET: api/skill-management/assignments/{empId}
+        // [HttpGet("assignments/{empId}")]
+        // public async Task<IActionResult> GetAssignments(int empId)
+        // {
+        //     var assignments = await _repo.GetAssignmentsAsync(empId);
+        //     return Ok(assignments);
+        // }
 
-        // GET: api/skill-management/languages/{empId}
-        [HttpGet("languages/{empId}")]
-        public async Task<IActionResult> GetProgrammingLanguages(int empId)
-        {
-            var langs = await _repo.GetProgrammingLanguagesAsync(empId);
-            return Ok(langs);
-        }
+        // // GET: api/skill-management/languages/{empId}
+        // [HttpGet("languages/{empId}")]
+        // public async Task<IActionResult> GetProgrammingLanguages(int empId)
+        // {
+        //     var langs = await _repo.GetProgrammingLanguagesAsync(empId);
+        //     return Ok(langs);
+        // }
 
         // POST: api/skill-management/domains
         [HttpPost("domains")]
@@ -156,14 +156,19 @@ namespace SkillManagement.Api.Controllers
             return result > 0 ? Ok("Programming skill draft saved successfully") : BadRequest("Save failed");
         }
 
-        // DELETE: api/skill-management/programming-skill
-        [HttpDelete("programming-skill")]
+        // DELETE: api/skill-management/programming/101/5
+        [HttpDelete("programming/{smid}/{epsdid}")]
         public async Task<IActionResult> DeleteProgrammingSkill(int smid, int epsdid)
         {
+            if (smid <= 0 || epsdid <= 0)
+            {
+                return BadRequest("Valid SMID and EPSDID are required.");
+            }
             var result = await _repo.DeleteProgrammingSkillAsync(smid, epsdid);
             return result > 0 ? NoContent() : NotFound("Delete failed. Record not found.");
         }
 
+        // UPDATED DELETE ENDPOINT FOR GENERAL SKILLS
         // DELETE: api/skill-management/skill
         [HttpDelete("skill")]
         public async Task<IActionResult> DeleteSkill([FromBody] DeleteSkillRequest request)
