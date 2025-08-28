@@ -24,6 +24,38 @@ namespace SkillManagement.Api.Controllers
             return Ok(roles);
         }
 
+        [HttpGet("domains/level1")]
+        public async Task<IActionResult> GetLevel1Domains()
+        {
+            var data = await _repo.GetLevel1DomainsAsync();
+            return Ok(data);
+        }
+
+        // GET: api/skill-management/domains/level2/5 
+        [HttpGet("domains/level2/{level1DomainId}")]
+        public async Task<IActionResult> GetLevel2Domains(int level1DomainId)
+        {
+            if (level1DomainId <= 0)
+            {
+                return BadRequest("A valid Level 1 Domain ID is required.");
+            }
+            var data = await _repo.GetLevel2DomainsAsync(level1DomainId);
+            return Ok(data);
+        }
+
+        // GET: api/skill-management/domains/level3/25
+        [HttpGet("domains/level3/{level2DomainId}")]
+        public async Task<IActionResult> GetLevel3Domains(int level2DomainId)
+        {
+            if (level2DomainId <= 0)
+            {
+                return BadRequest("A valid Level 2 Domain ID is required.");
+            }
+            var data = await _repo.GetLevel3DomainsAsync(level2DomainId);
+            return Ok(data);
+        }
+
+
         // GET: api/skill-management/employees
         [HttpGet("employees")]
         public async Task<IActionResult> GetEmployees(CancellationToken ct)

@@ -24,6 +24,9 @@ namespace SkillManagement.Api.Data
         Task<int> SaveProgrammingSkillDraftAsync(SaveProgrammingSkillDraftRequest request);
         Task<int> DeleteProgrammingSkillAsync(int smid, int epsdid);
         Task<int> DeleteSkillAsync(DeleteSkillRequest request);
+        Task<IEnumerable<Domain>> GetLevel1DomainsAsync();
+        Task<IEnumerable<Domain>> GetLevel2DomainsAsync(int level1DomainId);
+        Task<IEnumerable<Domain>> GetLevel3DomainsAsync(int level2DomainId);
     }
 
     public sealed class SkillManagementRepository : ISkillManagementRepository
@@ -50,6 +53,43 @@ namespace SkillManagement.Api.Data
             using var conn = new SqlConnection(_connectionString);
             return await conn.QueryAsync<Role>(
                 "SkillManagement_GetRoles",
+                commandType: CommandType.StoredProcedure);
+        }
+
+         /// <summary>
+        /// Gets the list for the Level 1 domain dropdown.
+        /// </summary>
+        public async Task<IEnumerable<Domain>> GetLevel1DomainsAsync()
+        {
+            using var conn = new SqlConnection(_connectionString);
+            return await conn.QueryAsync<Domain>(
+                "SkillManagement_GetLevel1DomainList",
+                commandType: CommandType.StoredProcedure);
+        }
+
+        /// <summary>
+        /// Gets the list for the Level 2 domain dropdown based on Level 1 selection.
+        /// </summary>
+        public async Task<IEnumerable<Domain>> GetLevel2DomainsAsync(int level1DomainId)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            var parameters = new { Level1DomainID = level1DomainId };
+            return await conn.QueryAsync<Domain>(
+                "SkillManagement_GetLevel2DomainList",
+                parameters,
+                commandType: CommandType.StoredProcedure);
+        }
+
+        /// <summary>
+        /// Gets the list for the Level 3 domain dropdown based on Level 2 selection.
+        /// </summary>
+        public async Task<IEnumerable<Domain>> GetLevel3DomainsAsync(int level2DomainId)
+        {
+            using var conn = new SqlConnection(_connectionString);
+            var parameters = new { Level2DomainID = level2DomainId };
+            return await conn.QueryAsync<Domain>(
+                "SkillManagement_GetLevel3DomainList",
+                parameters,
                 commandType: CommandType.StoredProcedure);
         }
 
