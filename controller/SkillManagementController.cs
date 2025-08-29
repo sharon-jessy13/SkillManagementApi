@@ -10,10 +10,12 @@ namespace SkillManagement.Api.Controllers
     public class SkillManagementController : ControllerBase
     {
         private readonly ISkillManagementRepository _repo;
+        private readonly ILogger<SkillManagementController> _logger;
 
-        public SkillManagementController(ISkillManagementRepository repo)
+        public SkillManagementController(ISkillManagementRepository repo, ILogger<SkillManagementController> logger)
         {
             _repo = repo;
+            _logger = logger;
         }
 
         // GET: api/skill-management/roles
@@ -88,12 +90,25 @@ namespace SkillManagement.Api.Controllers
         //     return Ok(langs);
         // }
 
-        // POST: api/skill-management/domains
-        [HttpPost("domains")]
-        public async Task<IActionResult> GetDomains([FromBody] DomainRequestDto dto)
+        [HttpGet("domains")]
+        public async Task<ActionResult<IEnumerable<DomainGridDto>>> GetDomains(
+            [FromQuery] int l1DomainId = 0,
+            [FromQuery] int l2DomainId = 0,
+            [FromQuery] int l3DomainId = 0)
         {
-            var domains = await _repo.GetDomainListAsync(dto.L1DomainID, dto.L2DomainID, dto.L3DomainID);
-            return Ok(domains);
+            try
+            {
+                var domains = await _repo.GetDomainListAsync(l1DomainId, l2DomainId, l3DomainId);
+                return Ok(domains);
+            }
+            catch (Exception ex)
+            {
+                // 4. Use the logger to record the full exception details
+                _logger.LogError(ex, "An error occurred while fetching the domain list.");
+
+                // In a real application, you would log the exception details
+                return StatusCode(500, "An internal server error occurred while fetching domains.");
+            }
         }
 
         // GET: api/skill-management/proficiencies

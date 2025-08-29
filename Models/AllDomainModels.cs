@@ -14,8 +14,8 @@ namespace SkillManagement.Api.Models
 
     public class Role
     {
-       public int RID { get; set; }
-    public string Roles { get; set; } = string.Empty;
+        public int RID { get; set; }
+        public string Roles { get; set; } = string.Empty;
     }
 
     /// <summary>
@@ -79,7 +79,7 @@ namespace SkillManagement.Api.Models
     {
         public int YEID { get; set; }
         public string YearOfExperience { get; set; } = string.Empty;
-       
+
     }
 
     /// <summary>
@@ -98,5 +98,15 @@ namespace SkillManagement.Api.Models
     {
         public int ComplexityID { get; set; }
         public string ComplexityName { get; set; } = string.Empty;
+    }
+    
+    public class DomainGridDto
+    {
+        public int DomainID { get; set; }
+        public string Level1 { get; set; } = string.Empty;
+        public string Level2 { get; set; } = string.Empty;
+        public string Level3 { get; set; } = string.Empty;
+        public string DomainName { get; set; } = string.Empty;
+        public string SkillDesc { get; set; } = string.Empty;
     }
 }

@@ -13,7 +13,7 @@ namespace SkillManagement.Api.Data
         // Task<IEnumerable<Skill>> GetPrimarySkillsAsync(int empId);
         // Task<IEnumerable<Assignment>> GetAssignmentsAsync(int empId);
         // Task<IEnumerable<ProgrammingLanguage>> GetProgrammingLanguagesAsync(int empId);
-        Task<IEnumerable<Domain>> GetDomainListAsync(int l1DomainId, int l2DomainId, int l3DomainId);
+        Task<IEnumerable<DomainGridDto>> GetDomainListAsync(int l1DomainId, int l2DomainId, int l3DomainId); 
         Task<IEnumerable<Proficiency>> GetProficiencyAsync();
         Task<IEnumerable<Experience>> GetYearsOfExperienceAsync();
         Task<IEnumerable<ActivityType>> GetActivityTypesAsync();
@@ -125,16 +125,16 @@ namespace SkillManagement.Api.Data
          * To get Level 2 domains under Level 1 (ID=5), you'd call it with l1DomainId=5, l2DomainId=0, etc.
          * This single method is better than adding three separate ones.
         */
-        public async Task<IEnumerable<Domain>> GetDomainListAsync(int l1DomainId, int l2DomainId, int l3DomainId)
+        public async Task<IEnumerable<DomainGridDto>> GetDomainListAsync(int l1DomainId, int l2DomainId, int l3DomainId)
         {
             using var conn = new SqlConnection(_connectionString);
-            return await conn.QueryAsync<Domain>(
+            var parameters = new { L1DomainID = l1DomainId, L2DomainID = l2DomainId, L3DomainID = l3DomainId };
+            // Automatic mapping works here as DomainGridDto matches the SP's output columns.
+            return await conn.QueryAsync<DomainGridDto>(
                 "SkillManagement_GetDomainList_L1L2L3",
-                new { L1DomainID = l1DomainId, L2DomainID = l2DomainId, L3DomainID = l3DomainId },
+                parameters,
                 commandType: CommandType.StoredProcedure);
-        }
-
-        public async Task<IEnumerable<Proficiency>> GetProficiencyAsync()
+        }        public async Task<IEnumerable<Proficiency>> GetProficiencyAsync()
         {
             using var conn = new SqlConnection(_connectionString);
 
