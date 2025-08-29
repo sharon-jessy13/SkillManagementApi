@@ -14,8 +14,8 @@ namespace SkillManagement.Api.Models
 
     public class Role
     {
-        public int RoleId { get; set; }
-        public string RoleName { get; set; }
+       public int RID { get; set; }
+    public string Roles { get; set; } = string.Empty;
     }
 
     /// <summary>
@@ -60,7 +60,7 @@ namespace SkillManagement.Api.Models
     public class Domain
     {
         public int DomainID { get; set; }
-        public string DomainName { get; set; } = string.Empty;
+        public string LevelName { get; set; } = string.Empty;
     }
 
     /// <summary>
@@ -77,7 +77,9 @@ namespace SkillManagement.Api.Models
     /// </summary>
     public class Experience
     {
-        public int Years { get; set; }
+        public int YEID { get; set; }
+        public string YearOfExperience { get; set; } = string.Empty;
+       
     }
 
     /// <summary>

@@ -56,7 +56,7 @@ namespace SkillManagement.Api.Data
                 commandType: CommandType.StoredProcedure);
         }
 
-         /// <summary>
+        /// <summary>
         /// Gets the list for the Level 1 domain dropdown.
         /// </summary>
         public async Task<IEnumerable<Domain>> GetLevel1DomainsAsync()
@@ -137,19 +137,36 @@ namespace SkillManagement.Api.Data
         public async Task<IEnumerable<Proficiency>> GetProficiencyAsync()
         {
             using var conn = new SqlConnection(_connectionString);
-            return await conn.QueryAsync<Proficiency>(
+
+            // Query the raw data from the stored procedure
+            var data = await conn.QueryAsync(
                 "SkillManagement_GetProficiency",
                 commandType: CommandType.StoredProcedure);
+
+            // Manually map the SQL columns (PID, Proficiency) to your C# properties (ProficiencyID, ProficiencyName)
+            return data.Select(row => new Proficiency
+            {
+                ProficiencyID = (int)row.PID,
+                ProficiencyName = (string)row.Proficiency
+            }).ToList();
         }
 
         public async Task<IEnumerable<Experience>> GetYearsOfExperienceAsync()
         {
             using var conn = new SqlConnection(_connectionString);
-            return await conn.QueryAsync<Experience>(
+
+            // Get the raw data from the database. The columns are "YEID" and "Experience".
+            var data = await conn.QueryAsync(
                 "SkillManagement_GetYearsOfExperience",
                 commandType: CommandType.StoredProcedure);
-        }
 
+            // Manually map the SQL columns to your C# Experience class properties
+            return data.Select(row => new Experience
+            {
+                YEID = (int)row.YEID,
+                YearOfExperience = (string)row.Experience
+            }).ToList();
+        }
         public async Task<IEnumerable<ActivityType>> GetActivityTypesAsync()
         {
             using var conn = new SqlConnection(_connectionString);
@@ -161,9 +178,14 @@ namespace SkillManagement.Api.Data
         public async Task<IEnumerable<Complexity>> GetComplexityAsync()
         {
             using var conn = new SqlConnection(_connectionString);
-            return await conn.QueryAsync<Complexity>(
+            var data = await conn.QueryAsync(
                 "SkillManagement_GetComplexity",
                 commandType: CommandType.StoredProcedure);
+                return data.Select(row => new Complexity
+            {
+                ComplexityID= (int)row.CID,
+                ComplexityName = (string)row.Complexity
+            }).ToList();
         }
 
         public async Task<int> InsertSkillAsync(AddSkillRequest request)
