@@ -188,27 +188,49 @@ namespace SkillManagement.Api.Data
             }).ToList();
         }
 
-        public async Task<int> InsertSkillAsync(AddSkillRequest request)
-        {
-            using var conn = new SqlConnection(_connectionString);
-            return await conn.ExecuteAsync(
-                "SkillManagement_InsertEmpSkillDetails",
-                new
-                {
-                    request.SMID,
-                    request.DomainID,
-                    ActivityID = request.SkillType == "C" ? request.ActivityID : 0,
-                    request.PID,
-                    CID = 0,
-                    request.YEID,
-                    OtherDomainSkill = request.OtherDomainSkill ?? string.Empty,
-                    request.SkillType
-                },
-                commandType: CommandType.StoredProcedure
-            );
-        }
+        // public async Task<int> InsertSkillAsync(AddSkillRequest request)
+        // {
+        //     using var conn = new SqlConnection(_connectionString);
+        //     return await conn.ExecuteAsync(
+        //         "SkillManagement_InsertEmpSkillDetails",
+        //         new
+        //         {
+        //             request.SMID,
+        //             request.DomainID,
+        //             ActivityID = request.SkillType == "C" ? request.ActivityID : 0,
+        //             request.PID,
+        //             CID = 0,
+        //             request.YEID,
+        //             OtherDomainSkill = request.OtherDomainSkill ?? string.Empty,
+        //             request.SkillType
+        //         },
+        //         commandType: CommandType.StoredProcedure
+        //     );
+        // }
 
-        public async Task<int> InsertProgrammingSkillAsync(AddProgrammingSkillRequest request)
+       public async Task<int> InsertSkillAsync(AddSkillRequest request)
+{
+    using var conn = new SqlConnection(_connectionString);
+    
+    // CORRECTED: Added commas after each property in this object.
+    var parameters = new
+    {
+        request.SMID,
+        request.DomainID,
+        PID = (request.SkillType == "P" || request.SkillType == "S") ? request.PID : 0,
+        CID = request.SkillType == "C" ? request.CID : 0,
+        ActivityID = request.SkillType == "C" ? request.ActivityID : 0,
+        request.YEID, 
+        OtherDomainSkill = request.OtherDomainSkill ?? string.Empty, 
+        request.SkillType
+    };
+
+    return await conn.ExecuteAsync(
+        "SkillManagement_InsertEmpSkillDetails",
+        parameters,
+        commandType: CommandType.StoredProcedure
+    );
+}        public async Task<int> InsertProgrammingSkillAsync(AddProgrammingSkillRequest request)
         {
             using var conn = new SqlConnection(_connectionString);
             return await conn.ExecuteAsync(
