@@ -43,7 +43,7 @@ namespace SkillManagement.Api.Models.Requests
     {
         public int SMID { get; set; }
         public string ProgLanguage { get; set; } = string.Empty;
-        public int ExperienceYears { get; set; }
+        public string Experience { get; set; } = string.Empty;
         public int EPSDID { get; set; }
     }
 

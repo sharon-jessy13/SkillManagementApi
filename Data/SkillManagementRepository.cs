@@ -12,7 +12,7 @@ namespace SkillManagement.Api.Data
         Task<IEnumerable<Role>> GetRolesAsync();
         // Task<IEnumerable<Skill>> GetPrimarySkillsAsync(int empId);
         // Task<IEnumerable<Assignment>> GetAssignmentsAsync(int empId);
-        // Task<IEnumerable<ProgrammingLanguage>> GetProgrammingLanguagesAsync(int empId);
+        Task<IEnumerable<ProgrammingLanguage>> GetProgrammingLanguagesAsync();
         Task<IEnumerable<DomainGridDto>> GetDomainListAsync(int l1DomainId, int l2DomainId, int l3DomainId); 
         Task<IEnumerable<Proficiency>> GetProficiencyAsync();
         Task<IEnumerable<Experience>> GetYearsOfExperienceAsync();
@@ -111,14 +111,14 @@ namespace SkillManagement.Api.Data
         //         commandType: CommandType.StoredProcedure);
         // }
 
-        // public async Task<IEnumerable<ProgrammingLanguage>> GetProgrammingLanguagesAsync(int empId)
-        // {
-        //     using var conn = new SqlConnection(_connectionString);
-        //     return await conn.QueryAsync<ProgrammingLanguage>(
-        //         "SkillManagement_GetProgrammingLanguages",
-        //         new { EmpId = empId },
-        //         commandType: CommandType.StoredProcedure);
-        // }
+        public async Task<IEnumerable<ProgrammingLanguage>> GetProgrammingLanguagesAsync()
+        {
+            using var conn = new SqlConnection(_connectionString);
+            return await conn.QueryAsync<ProgrammingLanguage>(
+                "SkillManagement_GetProgrammingLanguages",
+               
+                commandType: CommandType.StoredProcedure);
+        }
 
         /* * NOTE: Your GetDomainListAsync is more flexible than the separate GetLevel1/2/3 methods.
          * To get Level 1 domains, you would call this with l1DomainId=0, l2DomainId=0, l3DomainId=0.
@@ -208,29 +208,30 @@ namespace SkillManagement.Api.Data
         //     );
         // }
 
-       public async Task<int> InsertSkillAsync(AddSkillRequest request)
-{
-    using var conn = new SqlConnection(_connectionString);
-    
-    // CORRECTED: Added commas after each property in this object.
-    var parameters = new
-    {
-        request.SMID,
-        request.DomainID,
-        PID = (request.SkillType == "P" || request.SkillType == "S") ? request.PID : 0,
-        CID = request.SkillType == "C" ? request.CID : 0,
-        ActivityID = request.SkillType == "C" ? request.ActivityID : 0,
-        request.YEID, 
-        OtherDomainSkill = request.OtherDomainSkill ?? string.Empty, 
-        request.SkillType
-    };
+        public async Task<int> InsertSkillAsync(AddSkillRequest request)
+        {
+            using var conn = new SqlConnection(_connectionString);
 
-    return await conn.ExecuteAsync(
-        "SkillManagement_InsertEmpSkillDetails",
-        parameters,
-        commandType: CommandType.StoredProcedure
-    );
-}        public async Task<int> InsertProgrammingSkillAsync(AddProgrammingSkillRequest request)
+            // CORRECTED: Added commas after each property in this object.
+            var parameters = new
+            {
+                request.SMID,
+                request.DomainID,
+                PID = (request.SkillType == "P" || request.SkillType == "S") ? request.PID : 0,
+                CID = request.SkillType == "C" ? request.CID : 0,
+                ActivityID = request.SkillType == "C" ? request.ActivityID : 0,
+                request.YEID,
+                OtherDomianSkill = request.OtherDomainSkill ?? string.Empty,
+                request.SkillType
+            };
+
+            return await conn.ExecuteAsync(
+                "SkillManagement_InsertEmpSkillDetails",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+        }      
+  public async Task<int> InsertProgrammingSkillAsync(AddProgrammingSkillRequest request)
         {
             using var conn = new SqlConnection(_connectionString);
             return await conn.ExecuteAsync(

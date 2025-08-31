@@ -82,13 +82,13 @@ namespace SkillManagement.Api.Controllers
         //     return Ok(assignments);
         // }
 
-        // // GET: api/skill-management/languages/{empId}
-        // [HttpGet("languages/{empId}")]
-        // public async Task<IActionResult> GetProgrammingLanguages(int empId)
-        // {
-        //     var langs = await _repo.GetProgrammingLanguagesAsync(empId);
-        //     return Ok(langs);
-        // }
+        // GET: api/skill-management/languages
+        [HttpGet("languages")]
+        public async Task<IActionResult> GetProgrammingLanguages()
+        {
+            var langs = await _repo.GetProgrammingLanguagesAsync();
+            return Ok(langs);
+        }
 
         [HttpGet("domains")]
         public async Task<ActionResult<IEnumerable<DomainGridDto>>> GetDomains(
