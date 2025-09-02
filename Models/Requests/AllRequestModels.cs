@@ -33,7 +33,7 @@ namespace SkillManagement.Api.Models.Requests
         public string SkillType { get; set; } = string.Empty;
         public int DomainID { get; set; }
         public string? Proficiency { get; set; }
-        public int? ExperienceYears { get; set; }
+        public string? ExperienceYears { get; set; }
         public string? ActivityName { get; set; }
         public string? Complexity { get; set; }
         public int ESDID { get; set; }

@@ -156,17 +156,53 @@ namespace SkillManagement.Api.Controllers
         }
 
         // POST: api/skill-management/save-skill-draft
+        // [HttpPost("save-skill-draft")]
+        // public async Task<IActionResult> SaveSkillDraft([FromBody] SaveSkillDraftRequest request)
+        // {
+        //     var result = await _repo.SaveSkillDraftAsync(request);
+        //     return result > 0 ? Ok("Skill draft saved successfully") : BadRequest("Save failed");
+        // }
         [HttpPost("save-skill-draft")]
         public async Task<IActionResult> SaveSkillDraft([FromBody] SaveSkillDraftRequest request)
         {
+            // --- START: VALIDATION LOGIC ---
+            switch (request.SkillType)
+            {
+                case "P": // Primary Skill Validation
+                    if (string.IsNullOrWhiteSpace(request.Proficiency) || request.DomainID == 0)
+                    {
+                        return BadRequest("For a 'Primary' skill, both Proficiency and DomainID are required.");
+                    }
+                    break;
+
+                case "C": // Current Skill Validation
+                    if (string.IsNullOrWhiteSpace(request.ActivityName) || 
+                        string.IsNullOrWhiteSpace(request.Complexity) || 
+                        request.DomainID == 0)
+                    {
+                        return BadRequest("For a 'Current' skill, ActivityName, Complexity, and DomainID are required.");
+                    }
+                    break;
+                
+                default:
+                    if (string.IsNullOrWhiteSpace(request.SkillType))
+                    {
+                        return BadRequest("SkillType is a required field.");
+                    }
+                    break;
+            }
+            // --- END: VALIDATION LOGIC ---
+
             var result = await _repo.SaveSkillDraftAsync(request);
-            return result > 0 ? Ok("Skill draft saved successfully") : BadRequest("Save failed");
+            
+            return result > 0 ? Ok("Skill draft saved successfully") : BadRequest("Save operation failed in the database.");
         }
 
         // POST: api/skill-management/save-programming-skill-draft
         [HttpPost("save-programming-skill-draft")]
         public async Task<IActionResult> SaveProgrammingSkillDraft([FromBody] SaveProgrammingSkillDraftRequest request)
         {
+            // CORRECTED: This now calls the correct repository method
             var result = await _repo.SaveProgrammingSkillDraftAsync(request);
             return result > 0 ? Ok("Programming skill draft saved successfully") : BadRequest("Save failed");
         }

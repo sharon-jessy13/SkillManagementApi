@@ -2,6 +2,7 @@ using SkillManagement.Api.Data;
 using FluentValidation.AspNetCore;
 using System.Reflection;
 using FluentValidation;
+using SkillManagement.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,9 @@ builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ISkillManagementRepository, SkillManagementRepository>();
+
+// Register the service for business logic
+builder.Services.AddScoped<ISkillManagementService, SkillManagementService>();
 
 var app = builder.Build();
 

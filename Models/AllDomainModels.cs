@@ -49,9 +49,8 @@ namespace SkillManagement.Api.Models
     /// </summary>
     public class ProgrammingLanguage
     {
-        public int LanguageID { get; set; }
-        public string LanguageName { get; set; } = string.Empty;
-        public string ExperienceYears { get; set; } = string.Empty;
+        public int PLID { get; set; }
+        public string ProgLanguage { get; set; } = string.Empty; 
     }
 
     /// <summary>

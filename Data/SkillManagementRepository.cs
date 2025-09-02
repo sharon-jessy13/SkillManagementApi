@@ -248,23 +248,30 @@ namespace SkillManagement.Api.Data
         }
         public async Task<int> SaveSkillDraftAsync(SaveSkillDraftRequest request)
         {
-            using var conn = new SqlConnection(_connectionString);
-            return await conn.ExecuteAsync(
-                "SkillManagement_UpdateSkillDetailsOnSubmit",
-                request,
-                commandType: CommandType.StoredProcedure
-            );
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                // This now correctly passes the string value for ExperienceYears
+                return await conn.ExecuteAsync(
+                    "SkillManagement_UpdateSkillDetailsOnSubmit",
+                    request, // Dapper maps properties from the request object to SP parameters
+                    commandType: CommandType.StoredProcedure
+                );
+            }
         }
-
+        
         public async Task<int> SaveProgrammingSkillDraftAsync(SaveProgrammingSkillDraftRequest request)
         {
-            using var conn = new SqlConnection(_connectionString);
-            return await conn.ExecuteAsync(
-                "SkillManagement_UpdateEmpProgSkillDetailsOnSubmit",
-                request,
-                commandType: CommandType.StoredProcedure
-            );
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                // Assuming you have a similar SP for programming skills
+                return await conn.ExecuteAsync(
+                    "SkillManagement_UpdateProgSkillDetailsOnSubmit", // Please verify this SP name
+                    request,
+                    commandType: CommandType.StoredProcedure
+                );
+            }
         }
+
         public async Task<int> DeleteProgrammingSkillAsync(int smid, int epsdid)
         {
             using var conn = new SqlConnection(_connectionString);
