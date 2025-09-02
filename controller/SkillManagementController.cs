@@ -140,20 +140,20 @@ namespace SkillManagement.Api.Controllers
         }
 
         // POST: api/skill-management/add-skill
-        [HttpPost("add-skill")]
-        public async Task<IActionResult> AddSkill([FromBody] AddSkillRequest request)
-        {
-            var result = await _repo.InsertSkillAsync(request);
-            return result > 0 ? Created() : BadRequest("Insert failed");
-        }
+        // [HttpPost("add-skill")]
+        // public async Task<IActionResult> AddSkill([FromBody] AddSkillRequest request)
+        // {
+        //     var result = await _repo.InsertSkillAsync(request);
+        //     return result > 0 ? Created() : BadRequest("Insert failed");
+        // }
 
-        // POST: api/skill-management/add-programming-skill
-        [HttpPost("add-programming-skill")]
-        public async Task<IActionResult> AddProgrammingSkill([FromBody] AddProgrammingSkillRequest request)
-        {
-            var result = await _repo.InsertProgrammingSkillAsync(request);
-            return result > 0 ? Created() : BadRequest("Insert failed");
-        }
+        // // POST: api/skill-management/add-programming-skill
+        // [HttpPost("add-programming-skill")]
+        // public async Task<IActionResult> AddProgrammingSkill([FromBody] AddProgrammingSkillRequest request)
+        // {
+        //     var result = await _repo.InsertProgrammingSkillAsync(request);
+        //     return result > 0 ? Created() : BadRequest("Insert failed");
+        // }
 
         // POST: api/skill-management/save-skill-draft
         // [HttpPost("save-skill-draft")]
@@ -162,10 +162,71 @@ namespace SkillManagement.Api.Controllers
         //     var result = await _repo.SaveSkillDraftAsync(request);
         //     return result > 0 ? Ok("Skill draft saved successfully") : BadRequest("Save failed");
         // }
+
+        // POST: api/skill-management/add-skill
+        [HttpPost("add-skill")]
+        public async Task<IActionResult> AddSkill([FromBody] AddSkillRequest request)
+        {
+            switch (request.SkillType)
+            {
+                case "P": // Primary Skill Validation
+                    if (request.PID == 0)
+                    {
+                        return BadRequest("Please select a Proficiency.");
+                    }
+                    if (request.DomainID == 0)
+                    {
+                        return BadRequest("Please select a Domain.");
+                    }
+                    break;
+
+                case "C": // Current Assignment Skill Validation
+                    if (request.ActivityID == 0)
+                    {
+                        return BadRequest("Please select an Activity Type.");
+                    }
+                    if (request.CID == 0)
+                    {
+                        return BadRequest("Please select a Complexity.");
+                    }
+                    if (request.DomainID == 0)
+                    {
+                        return BadRequest("Please select a Domain.");
+                    }
+                    break;
+                
+                default:
+                    if (string.IsNullOrWhiteSpace(request.SkillType))
+                    {
+                        return BadRequest("SkillType is a required field.");
+                    }
+                    break;
+            }
+            
+
+            var result = await _repo.InsertSkillAsync(request);
+            return result > 0 ? Created() : BadRequest("Insert failed");
+        }
+
+        // POST: api/skill-management/add-programming-skill
+        [HttpPost("add-programming-skill")]
+        public async Task<IActionResult> AddProgrammingSkill([FromBody] AddProgrammingSkillRequest request)
+        {
+            
+            if (request.PLID == 0)
+            {
+                return BadRequest("Please select a Programming Language.");
+            }
+
+            var result = await _repo.InsertProgrammingSkillAsync(request);
+            return result > 0 ? Created() : BadRequest("Insert failed");
+        }
+
+
         [HttpPost("save-skill-draft")]
         public async Task<IActionResult> SaveSkillDraft([FromBody] SaveSkillDraftRequest request)
         {
-            // --- START: VALIDATION LOGIC ---
+            
             switch (request.SkillType)
             {
                 case "P": // Primary Skill Validation
@@ -191,8 +252,7 @@ namespace SkillManagement.Api.Controllers
                     }
                     break;
             }
-            // --- END: VALIDATION LOGIC ---
-
+            
             var result = await _repo.SaveSkillDraftAsync(request);
             
             return result > 0 ? Ok("Skill draft saved successfully") : BadRequest("Save operation failed in the database.");
