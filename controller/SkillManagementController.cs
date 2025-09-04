@@ -205,7 +205,7 @@ namespace SkillManagement.Api.Controllers
             
 
             var result = await _repo.InsertSkillAsync(request);
-            return result > 0 ? Created() : BadRequest("Insert failed");
+            return result > 0 ?Ok() : BadRequest("Insert failed");
         }
 
         // POST: api/skill-management/add-programming-skill
@@ -219,7 +219,7 @@ namespace SkillManagement.Api.Controllers
             }
 
             var result = await _repo.InsertProgrammingSkillAsync(request);
-            return result > 0 ? Created() : BadRequest("Insert failed");
+            return result > 0 ? Ok() : BadRequest("Insert failed");
         }
 
 
@@ -276,7 +276,7 @@ namespace SkillManagement.Api.Controllers
                 return BadRequest("Valid SMID and EPSDID are required.");
             }
             var result = await _repo.DeleteProgrammingSkillAsync(smid, epsdid);
-            return result > 0 ? NoContent() : NotFound("Delete failed. Record not found.");
+            return result > 0 ? Ok(new { message = "Record deleted successfully" }) : NotFound("Delete failed. Record not found.");
         }
 
         // UPDATED DELETE ENDPOINT FOR GENERAL SKILLS
@@ -285,7 +285,7 @@ namespace SkillManagement.Api.Controllers
         public async Task<IActionResult> DeleteSkill([FromBody] DeleteSkillRequest request)
         {
             var result = await _repo.DeleteSkillAsync(request);
-            return result > 0 ? NoContent() : NotFound("Delete failed. Record not found.");
+           return result > 0 ? Ok(new { message = "Record deleted successfully" }) : NotFound("Delete failed. Record not found.");
         }
     }
 }
