@@ -26,7 +26,7 @@ namespace SkillManagement.Api.Models.Requests
         public int L2DomainID { get; set; }
         public int L3DomainID { get; set; }
     }
-    
+
     public class SaveSkillDraftRequest
     {
         public int SMID { get; set; }
@@ -38,7 +38,7 @@ namespace SkillManagement.Api.Models.Requests
         public string? Complexity { get; set; }
         public int ESDID { get; set; }
     }
-    
+
     public class SaveProgrammingSkillDraftRequest
     {
         public int SMID { get; set; }
@@ -57,5 +57,30 @@ namespace SkillManagement.Api.Models.Requests
         public string? ExperienceYears { get; set; }
         public string? Complexity { get; set; }
         public int ESDID { get; set; }
+    }
+
+    public class SubmitSkillsRequest
+    {
+        public int SMID { get; set; }
+        public List<UpdateSkillRequest> DomainSkills { get; set; } = new();
+        public List<UpdateProgrammingSkillRequest> ProgrammingSkills { get; set; } = new();
+    }
+
+    public class UpdateSkillRequest
+    {
+        public int ESDID { get; set; }
+        public int DomainID { get; set; }
+        public string SkillType { get; set; } = string.Empty; // "P", "S", or "C"
+        public string? Proficiency { get; set; }
+        public string? ExperienceYears { get; set; }
+        public string? ActivityName { get; set; }
+        public string? Complexity { get; set; }
+    }
+
+    public class UpdateProgrammingSkillRequest
+    {
+        public int EPSDID { get; set; }
+        public string ProgLanguage { get; set; } = string.Empty;
+        public string ExperienceYears { get; set; } = string.Empty;
     }
 }

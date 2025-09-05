@@ -194,7 +194,7 @@ namespace SkillManagement.Api.Controllers
                         return BadRequest("Please select a Domain.");
                     }
                     break;
-                
+
                 default:
                     if (string.IsNullOrWhiteSpace(request.SkillType))
                     {
@@ -202,17 +202,17 @@ namespace SkillManagement.Api.Controllers
                     }
                     break;
             }
-            
+
 
             var result = await _repo.InsertSkillAsync(request);
-            return result > 0 ?Ok() : BadRequest("Insert failed");
+            return result > 0 ? Ok() : BadRequest("Insert failed");
         }
 
         // POST: api/skill-management/add-programming-skill
         [HttpPost("add-programming-skill")]
         public async Task<IActionResult> AddProgrammingSkill([FromBody] AddProgrammingSkillRequest request)
         {
-            
+
             if (request.PLID == 0)
             {
                 return BadRequest("Please select a Programming Language.");
@@ -226,7 +226,7 @@ namespace SkillManagement.Api.Controllers
         [HttpPost("save-skill-draft")]
         public async Task<IActionResult> SaveSkillDraft([FromBody] SaveSkillDraftRequest request)
         {
-            
+
             switch (request.SkillType)
             {
                 case "P": // Primary Skill Validation
@@ -237,14 +237,14 @@ namespace SkillManagement.Api.Controllers
                     break;
 
                 case "C": // Current Skill Validation
-                    if (string.IsNullOrWhiteSpace(request.ActivityName) || 
-                        string.IsNullOrWhiteSpace(request.Complexity) || 
+                    if (string.IsNullOrWhiteSpace(request.ActivityName) ||
+                        string.IsNullOrWhiteSpace(request.Complexity) ||
                         request.DomainID == 0)
                     {
                         return BadRequest("For a 'Current' skill, ActivityName, Complexity, and DomainID are required.");
                     }
                     break;
-                
+
                 default:
                     if (string.IsNullOrWhiteSpace(request.SkillType))
                     {
@@ -252,9 +252,9 @@ namespace SkillManagement.Api.Controllers
                     }
                     break;
             }
-            
+
             var result = await _repo.SaveSkillDraftAsync(request);
-            
+
             return result > 0 ? Ok("Skill draft saved successfully") : BadRequest("Save operation failed in the database.");
         }
 
@@ -285,7 +285,71 @@ namespace SkillManagement.Api.Controllers
         public async Task<IActionResult> DeleteSkill([FromBody] DeleteSkillRequest request)
         {
             var result = await _repo.DeleteSkillAsync(request);
-           return result > 0 ? Ok(new { message = "Record deleted successfully" }) : NotFound("Delete failed. Record not found.");
+            return result > 0 ? Ok(new { message = "Record deleted successfully" }) : NotFound("Delete failed. Record not found.");
+        }
+
+        // POST: api/skill-management/submit
+        [HttpPost("submit")]
+        public async Task<IActionResult> SubmitSkills([FromBody] SubmitSkillsRequest request)
+        {
+            
+            // Rule: Maximum of one Primary skill
+            if (request.DomainSkills.Count(s => s.SkillType == "P") > 1)
+            {
+                return BadRequest("Validation failed: A maximum of one Primary skill can be submitted.");
+            }
+
+            // Rule: Maximum of one Secondary skill
+            if (request.DomainSkills.Count(s => s.SkillType == "S") > 1)
+            {
+                return BadRequest("Validation failed: A maximum of one Secondary skill can be submitted.");
+            }
+
+            // Rule: Maximum of three Current Assignment skills
+            if (request.DomainSkills.Count(s => s.SkillType == "C") > 3)
+            {
+                return BadRequest("Validation failed: A maximum of three Current Assignment skills can be submitted.");
+            }
+
+            // Rule: Mandatory to have at least one of each type
+            if (!request.DomainSkills.Any(s => s.SkillType == "P"))
+            {
+                return BadRequest("Validation failed: At least one Primary skill is mandatory.");
+            }
+            if (!request.DomainSkills.Any(s => s.SkillType == "S"))
+            {
+                return BadRequest("Validation failed: At least one Secondary skill is mandatory.");
+            }
+            if (!request.DomainSkills.Any(s => s.SkillType == "C"))
+            {
+                return BadRequest("Validation failed: At least one Current Assignment skill is mandatory.");
+            }
+            if (!request.ProgrammingSkills.Any())
+            {
+                return BadRequest("Validation failed: At least one Programming Language skill is mandatory.");
+            }
+
+           
+
+            try
+            {
+                var success = await _repo.SubmitAllSkillsAsync(request);
+
+                if (success)
+                {
+                    return Ok(new { message = "All skills submitted successfully." });
+                }
+                else
+                {
+                    // This indicates a transaction rollback due to a database-side issue
+                    return StatusCode(500, "An internal error occurred while saving the skills. The operation was rolled back.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An unexpected error occurred during the skill submission process for SMID {SMID}.", request.SMID);
+                return StatusCode(500, "An unexpected server error occurred.");
+            }
         }
     }
 }

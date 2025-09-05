@@ -20,5 +20,6 @@ namespace SkillManagement.Api.Services
         Task<int> SaveProgrammingSkillDraftAsync(SaveProgrammingSkillDraftRequest request);
         Task<int> DeleteProgrammingSkillAsync(int smid, int epsdid);
         Task<int> DeleteSkillAsync(DeleteSkillRequest request);
+        Task<bool> SubmitAllSkillsAsync(SubmitSkillsRequest request);
     }
 }

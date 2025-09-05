@@ -13,7 +13,7 @@ namespace SkillManagement.Api.Data
         // Task<IEnumerable<Skill>> GetPrimarySkillsAsync(int empId);
         // Task<IEnumerable<Assignment>> GetAssignmentsAsync(int empId);
         Task<IEnumerable<ProgrammingLanguage>> GetProgrammingLanguagesAsync();
-        Task<IEnumerable<DomainGridDto>> GetDomainListAsync(int l1DomainId, int l2DomainId, int l3DomainId); 
+        Task<IEnumerable<DomainGridDto>> GetDomainListAsync(int l1DomainId, int l2DomainId, int l3DomainId);
         Task<IEnumerable<Proficiency>> GetProficiencyAsync();
         Task<IEnumerable<Experience>> GetYearsOfExperienceAsync();
         Task<IEnumerable<ActivityType>> GetActivityTypesAsync();
@@ -27,6 +27,7 @@ namespace SkillManagement.Api.Data
         Task<IEnumerable<Domain>> GetLevel1DomainsAsync();
         Task<IEnumerable<Domain>> GetLevel2DomainsAsync(int level1DomainId);
         Task<IEnumerable<Domain>> GetLevel3DomainsAsync(int level2DomainId);
+        Task<bool> SubmitAllSkillsAsync(SubmitSkillsRequest request);
     }
 
     public sealed class SkillManagementRepository : ISkillManagementRepository
@@ -116,7 +117,7 @@ namespace SkillManagement.Api.Data
             using var conn = new SqlConnection(_connectionString);
             return await conn.QueryAsync<ProgrammingLanguage>(
                 "SkillManagement_GetProgrammingLanguages",
-               
+
                 commandType: CommandType.StoredProcedure);
         }
 
@@ -134,7 +135,8 @@ namespace SkillManagement.Api.Data
                 "SkillManagement_GetDomainList_L1L2L3",
                 parameters,
                 commandType: CommandType.StoredProcedure);
-        }        public async Task<IEnumerable<Proficiency>> GetProficiencyAsync()
+        }
+        public async Task<IEnumerable<Proficiency>> GetProficiencyAsync()
         {
             using var conn = new SqlConnection(_connectionString);
 
@@ -181,9 +183,9 @@ namespace SkillManagement.Api.Data
             var data = await conn.QueryAsync(
                 "SkillManagement_GetComplexity",
                 commandType: CommandType.StoredProcedure);
-                return data.Select(row => new Complexity
+            return data.Select(row => new Complexity
             {
-                ComplexityID= (int)row.CID,
+                ComplexityID = (int)row.CID,
                 ComplexityName = (string)row.Complexity
             }).ToList();
         }
@@ -230,8 +232,8 @@ namespace SkillManagement.Api.Data
                 parameters,
                 commandType: CommandType.StoredProcedure
             );
-        }      
-  public async Task<int> InsertProgrammingSkillAsync(AddProgrammingSkillRequest request)
+        }
+        public async Task<int> InsertProgrammingSkillAsync(AddProgrammingSkillRequest request)
         {
             using var conn = new SqlConnection(_connectionString);
             return await conn.ExecuteAsync(
@@ -258,7 +260,7 @@ namespace SkillManagement.Api.Data
                 );
             }
         }
-        
+
         public async Task<int> SaveProgrammingSkillDraftAsync(SaveProgrammingSkillDraftRequest request)
         {
             using (var conn = new SqlConnection(_connectionString))
@@ -290,6 +292,67 @@ namespace SkillManagement.Api.Data
                 request,
                 commandType: CommandType.StoredProcedure
             );
+        }
+
+        public async Task<bool> SubmitAllSkillsAsync(SubmitSkillsRequest request)
+        {
+            // Use a single connection for the entire transaction
+            using var conn = new SqlConnection(_connectionString);
+            await conn.OpenAsync();
+            // Start a transaction
+            using var transaction = conn.BeginTransaction();
+
+            try
+            {
+                // 1. Process all the Domain, Primary, Secondary, and Current skills
+                foreach (var skill in request.DomainSkills)
+                {
+                    await conn.ExecuteAsync(
+                        "SkillManagement_UpdateSkillDetailsOnSubmit",
+                        new
+                        {
+                            request.SMID,
+                            skill.ESDID,
+                            skill.DomainID,
+                            skill.SkillType,
+                            skill.Proficiency,
+                            skill.ExperienceYears,
+                            skill.ActivityName,
+                            skill.Complexity
+                        },
+                        commandType: CommandType.StoredProcedure,
+                        transaction: transaction 
+                    );
+                }
+
+               
+                foreach (var progSkill in request.ProgrammingSkills)
+                {
+                    await conn.ExecuteAsync(
+                        "SkillManagement_UpdateProgSkillDetailsOnSubmit", 
+                        new
+                        {
+                            request.SMID,
+                            progSkill.EPSDID,
+                            progSkill.ProgLanguage,
+                            progSkill.ExperienceYears
+                        },
+                        commandType: CommandType.StoredProcedure,
+                        transaction: transaction 
+                    );
+                }
+
+                
+                await transaction.CommitAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                
+                await transaction.RollbackAsync();
+                // You should log the exception here
+                return false;
+            }
         }
     }
 }
